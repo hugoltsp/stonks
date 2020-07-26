@@ -33,4 +33,3 @@ out/
 .vscode/
 
 database/model.mwb.bak
-src/main/resources/.env

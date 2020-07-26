@@ -29,21 +29,26 @@ object StockResource {
                 return null
             }
             else -> {
-                val document = Jsoup.parse(result.get())
-                val elementsByTag = document.getElementsByTag("span")
-                val filter = elementsByTag.findLast { "Preço das ações" == it.text() }
-                val element = filter?.parent()?.parent()?.lastElementSibling()
-                val text = element?.text()!!
-                val rawText = text.dropLast(text.length - text.indexOf(stockIdentifier.toUpperCase()))
-                    .trim()
-                    .split(" ")
+                try {
+                    val document = Jsoup.parse(result.get())
+                    val elementsByTag = document.getElementsByTag("span")
+                    val filter = elementsByTag.findLast { "Preço das ações" == it.text() }
+                    val element = filter?.parent()?.parent()?.lastElementSibling()
+                    val text = element?.text()!!
+                    val rawText = text.dropLast(text.length - text.indexOf(stockIdentifier.toUpperCase()))
+                        .trim()
+                        .split(" ")
 
-                return StockResponse(
-                    stockIdentifier.toUpperCase(),
-                    parseValue(rawText[0]),
-                    parseChange(rawText[1]),
-                    parsePercent(rawText[2])
-                )
+                    return StockResponse(
+                        stockIdentifier.toUpperCase(),
+                        parseValue(rawText[0]),
+                        parseChange(rawText[1]),
+                        parsePercent(rawText[2])
+                    )
+                } catch (e: Exception) {
+                    logger.error("Failed while searching for: [$stockIdentifier]")
+                    throw e
+                }
             }
         }
 

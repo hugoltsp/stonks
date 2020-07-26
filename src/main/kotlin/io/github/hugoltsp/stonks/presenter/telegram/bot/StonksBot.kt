@@ -63,10 +63,7 @@ class StonksBot(
                     if (update.hasUser()) {
                         update.message?.from?.id?.let {
                             removeSubscription.unsubscribe(it)
-                            bot.sendMessage(
-                                it,
-                                "Ate mais $it, espero que possamos voltar a ser amigos novamente algum dia!"
-                            )
+                            bot.sendMessage(it, UNSUBSCRIBE_MESSAGE)
                         }
                     }
                 } catch (e: Exception) {
@@ -78,9 +75,7 @@ class StonksBot(
                 if (update.hasUser()) {
                     update.message?.from?.id?.let {
                         bot.sendMessage(
-                            it,
-                            "***/add itub3,xpml11*** - adiciona acoes para voce ser notificado\n\n***/ver mglu3*** - faz consulta\n\n***/flw*** - cancela as notificacoes!"
-                            , ParseMode.MARKDOWN
+                            it, START_MESSAGE_TEMPLATE, ParseMode.MARKDOWN
                         )
                     }
                 }
@@ -100,7 +95,6 @@ class StonksBot(
         GlobalScope.launch {
             while (true) {
                 try {
-
                     retrieveSubscriptions
                         .retrieveAll()
                         .groupBy { it.subscriberId }
@@ -115,7 +109,6 @@ class StonksBot(
                                 .joinToString("\n\n"), ParseMode.MARKDOWN)
 
                         }
-
                     delay(Duration.ofMinutes(Settings.notificationScheduleMinutes).toMillis())
                 } catch (e: Exception) {
                     logger.error("Error.", e)
@@ -132,6 +125,10 @@ class StonksBot(
         const val START_COMMAND = "start"
         const val PEEK_COMMAND = "ver"
         const val UNSUBSCRIBE_COMMAND = "flw"
+
+        const val UNSUBSCRIBE_MESSAGE = "Ate mais, espero que possamos voltar a ser amigos novamente algum dia!"
+        const val START_MESSAGE_TEMPLATE =
+            "***/add itub3,xpml11*** - adiciona acoes para voce ser notificado\n\n***/ver mglu3*** - faz consulta\n\n***/flw*** - cancela as notificacoes!"
 
         val logger = getLogger()
     }
