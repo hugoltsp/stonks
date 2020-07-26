@@ -1,0 +1,25 @@
+version: '3.3'
+services:
+
+  app:
+    image: hltspires/stonks-bot
+    build: .
+    networks:
+      - stonks-bot
+
+  db:
+    image: hltspires/stonks-db
+    build:
+      ./database
+    environment:
+      - MYSQL_DATABASE=stonks-bot
+      - MYSQL_USER=stonks-bot
+      - MYSQL_PASSWORD=stonks-bot
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+    ports:
+      - 3306:3306
+    networks:
+      - stonks-bot
+
+networks:
+  stonks-bot:
