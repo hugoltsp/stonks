@@ -17,7 +17,7 @@ object DatabaseConfig {
             connection = connect(
                 HikariDataSource(
                     HikariConfig().apply {
-                        driverClassName = "org.mariadb.jdbc.Driver"
+                        driverClassName = "org.postgresql.Driver"
                         jdbcUrl = Settings.jdbcUrl
                         username = Settings.databaseUser
                         password = Settings.databasePassword

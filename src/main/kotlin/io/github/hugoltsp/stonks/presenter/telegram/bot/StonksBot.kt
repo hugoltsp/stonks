@@ -15,6 +15,7 @@ import me.ivmg.telegram.dispatcher.command
 import me.ivmg.telegram.dispatcher.telegramError
 import me.ivmg.telegram.entities.ParseMode
 import me.ivmg.telegram.entities.Update
+import okhttp3.logging.HttpLoggingInterceptor.Level.NONE
 import java.time.Duration
 
 class StonksBot(
@@ -31,6 +32,7 @@ class StonksBot(
 
     private fun startCommandListener() = bot {
         token = Settings.telegramToken
+        logLevel = NONE
         dispatch {
             command(ADD_COMMAND) { _, update, args ->
                 try {
@@ -91,6 +93,7 @@ class StonksBot(
     private fun startNotificationRoutine() {
         val bot = bot {
             token = Settings.telegramToken
+            logLevel = NONE
         }
         GlobalScope.launch {
             while (true) {

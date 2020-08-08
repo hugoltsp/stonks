@@ -12,12 +12,13 @@ services:
     build:
       ./database
     environment:
-      - MYSQL_DATABASE=stonks-bot
-      - MYSQL_USER=stonks-bot
-      - MYSQL_PASSWORD=stonks-bot
-      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+      - POSTGRES_USER=stonks
+      - POSTGRES_PASSWORD=stonks
+      - POSTGRES_DB=stonks
+    volumes:
+      - ${HOME}/stonks-db:/var/lib/postgresql/data
     ports:
-      - 3306:3306
+      - 5432:5432
     networks:
       - stonks-bot
 
