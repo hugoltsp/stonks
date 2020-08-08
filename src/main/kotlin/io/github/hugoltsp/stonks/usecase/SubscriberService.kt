@@ -4,10 +4,10 @@ import io.github.hugoltsp.stonks.data.repository.StockBySubscriberRepository
 import io.github.hugoltsp.stonks.data.repository.SubscriberRepository
 import org.jetbrains.exposed.sql.transactions.transaction
 
-object SubscriberService {
-
-    private val subscriberRepository = SubscriberRepository
-    private val stockBySubscriberRepository = StockBySubscriberRepository
+class SubscriberService(
+    private val subscriberRepository: SubscriberRepository = SubscriberRepository,
+    private val stockBySubscriberRepository: StockBySubscriberRepository = StockBySubscriberRepository
+) {
 
     fun findSubscriberByTelegramId(subscriberChatId: Long) = transaction {
         subscriberRepository.findByTelegramUserId(subscriberChatId)
