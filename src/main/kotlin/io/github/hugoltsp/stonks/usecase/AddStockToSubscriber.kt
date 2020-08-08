@@ -1,13 +1,10 @@
 package io.github.hugoltsp.stonks.usecase
 
-import io.github.hugoltsp.stonks.data.domain.NewStockCommand
-import io.github.hugoltsp.stonks.data.resource.StockResource
 import io.github.hugoltsp.stonks.infra.extensions.getLogger
 
 class AddStockToSubscriber(
-    private val stockService: StockService = StockService,
-    private val subscriberService: SubscriberService = SubscriberService,
-    private val stockResource: StockResource = StockResource
+    private val stockService: StockService = StockService(),
+    private val subscriberService: SubscriberService = SubscriberService()
 ) {
 
     fun add(telegramId: Long, stocks: List<String>) {
@@ -25,9 +22,7 @@ class AddStockToSubscriber(
         upperCaseStocks.asSequence()
             .map {
                 existingStocks.getOrElse(it) {
-                    stockResource.get(it)?.run {
-                        stockService.save(NewStockCommand(name, price, change, changePercent))
-                    }
+                    stockService.persist(it)
                 }
             }
             .forEach {

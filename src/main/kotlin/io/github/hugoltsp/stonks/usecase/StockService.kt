@@ -9,26 +9,28 @@ import io.github.hugoltsp.stonks.infra.domain.Settings
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Duration
 
-object StockService {
-
-    private val cache = Caffeine.newBuilder()
-        .maximumSize(256)
-        .expireAfterWrite(Duration.ofMinutes(Settings.stockCacheEvictionInMinutes))
-        .build<String, StockVO>()
-
-    private val stockResource: StockResource = StockResource
+class StockService(
+    private val stockResource: StockResource = StockResource,
     private val stockRepository: StockRepository = StockRepository
+) {
 
-    fun findByIdentifier(identifier: String) = cache.get(identifier.toUpperCase()) {
+    fun persist(identifier: String) = cache.get(identifier.toUpperCase()) {
         stockResource.get(identifier.toUpperCase())?.let {
-            transaction {
-                stockRepository.save(NewStockCommand(it.name, it.price, it.change, it.changePercent))
-            }
+            save(NewStockCommand(it.name, it.price, it.change, it.changePercent))
         }
     }
 
     fun findByName(identifier: String) = transaction { stockRepository.findByName(identifier.toUpperCase()) }
 
-    fun save(command: NewStockCommand) = transaction { stockRepository.save(command) }
+    private fun save(command: NewStockCommand) = transaction { stockRepository.save(command) }
+
+    private companion object {
+
+        val cache = Caffeine.newBuilder()
+            .maximumSize(256)
+            .expireAfterWrite(Duration.ofMinutes(Settings.stockCacheEvictionInMinutes))
+            .build<String, StockVO>()
+
+    }
 
 }
