@@ -12,6 +12,7 @@ repositories {
 }
 
 dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation group: "com.github.ben-manes.caffeine", name: "caffeine", version: "2.8.5"
     implementation group: "org.jetbrains.kotlin", name: "kotlin-stdlib-jdk8"
@@ -46,9 +47,11 @@ tasks.test {
 }
 
 jar {
+
     manifest {
         attributes 'Main-Class': 'io.github.hugoltsp.stonks.AppKt'
     }
 
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+
 }

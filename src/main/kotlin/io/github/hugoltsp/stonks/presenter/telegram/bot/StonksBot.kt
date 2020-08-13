@@ -89,7 +89,6 @@ class StonksBot(
         }
     }.startPolling()
 
-
     private fun startNotificationRoutine() {
         val bot = bot {
             token = Settings.telegramToken
@@ -134,6 +133,7 @@ class StonksBot(
             "***/add itub3,xpml11*** - adiciona acoes para voce ser notificado\n\n***/ver mglu3*** - faz consulta\n\n***/flw*** - cancela as notificacoes!"
 
         val logger = getLogger()
+
     }
 
 }

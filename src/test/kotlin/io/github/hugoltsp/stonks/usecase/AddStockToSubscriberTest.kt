@@ -3,24 +3,17 @@ package io.github.hugoltsp.stonks.usecase
 import com.nhaarman.mockitokotlin2.*
 import io.github.hugoltsp.stonks.data.domain.StockVO
 import io.github.hugoltsp.stonks.data.domain.SubscriberVO
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 
 internal class AddStockToSubscriberTest {
 
-    val stockService: StockService = mock()
-    val subscriberService: SubscriberService = mock()
-
-    lateinit var addStockToSubscriber: AddStockToSubscriber
-
-    @BeforeEach
-    fun setup() {
-        addStockToSubscriber = AddStockToSubscriber(stockService, subscriberService)
-    }
-
     @Test
     fun `subscribes existing user and associate him to an existing stock`() {
+
+        val stockService = mock<StockService>()
+        val subscriberService = mock<SubscriberService>()
+        val addStockToSubscriber = AddStockToSubscriber(stockService, subscriberService)
 
         val identifier = "ITUB3"
         val stocks = listOf(identifier)
@@ -48,6 +41,10 @@ internal class AddStockToSubscriberTest {
     @Test
     fun `creates new user and associate him to an existing stock`() {
 
+        val stockService = mock<StockService>()
+        val subscriberService = mock<SubscriberService>()
+        val addStockToSubscriber = AddStockToSubscriber(stockService, subscriberService)
+
         val identifier = "ITUB3"
         val stocks = listOf(identifier)
         val telegramId = 123L
@@ -73,6 +70,10 @@ internal class AddStockToSubscriberTest {
 
     @Test
     fun `persists non existent stock`() {
+
+        val stockService = mock<StockService>()
+        val subscriberService = mock<SubscriberService>()
+        val addStockToSubscriber = AddStockToSubscriber(stockService, subscriberService)
 
         val stocks = listOf("ITUB3", "ITSA4", "AAA123")
         val telegramId = 123L
