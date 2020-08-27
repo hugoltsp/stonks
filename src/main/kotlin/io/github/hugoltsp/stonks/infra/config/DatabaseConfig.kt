@@ -33,6 +33,7 @@ object DatabaseConfig {
             jdbcUrl = "jdbc:postgresql://${dbUri.host}:${dbUri.port}${dbUri.path}"
             username = usernameDb
             password = passwordDb
+            schema = Settings.databaseSchema
             connectionTestQuery = "SELECT 1"
         }
     } ?: HikariConfig().apply {
@@ -40,6 +41,7 @@ object DatabaseConfig {
         jdbcUrl = Settings.jdbcUrl
         username = Settings.databaseUser
         password = Settings.databasePassword
+        schema = Settings.databaseSchema
         connectionTestQuery = "SELECT 1"
     }
 
