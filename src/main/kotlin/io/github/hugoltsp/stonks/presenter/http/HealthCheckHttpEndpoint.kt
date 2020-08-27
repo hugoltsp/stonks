@@ -11,7 +11,7 @@ import io.ktor.server.netty.Netty
 class HealthCheckHttpEndpoint {
 
     fun start() {
-        embeddedServer(Netty, 8080) {
+        embeddedServer(Netty, System.getProperty("server.port")?.toInt() ?: 8080) {
             routing {
                 get("/health") {
                     call.respondText("Ok!", Plain)
