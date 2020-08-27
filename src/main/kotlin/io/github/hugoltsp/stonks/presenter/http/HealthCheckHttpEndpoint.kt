@@ -13,7 +13,7 @@ class HealthCheckHttpEndpoint {
     fun start() {
         embeddedServer(Netty, 8080) {
             routing {
-                get("/") {
+                get("/health") {
                     call.respondText("Ok!", Plain)
                 }
             }
