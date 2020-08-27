@@ -6,6 +6,7 @@ import io.github.hugoltsp.stonks.infra.extensions.getLogger
 import org.jsoup.Jsoup
 import java.math.BigDecimal
 import java.math.RoundingMode
+import kotlin.math.log
 
 object StockResource {
 
@@ -46,7 +47,8 @@ object StockResource {
                         parsePercent(rawText[2])
                     )
                 } catch (e: Exception) {
-                    logger.error("Failed while searching for: [$stockIdentifier]")
+                    logger.error("Failed while searching for: [$stockIdentifier]", e)
+                    logger.error("HTML {$result.get()}")
                     throw e
                 }
             }
