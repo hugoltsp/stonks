@@ -48,7 +48,7 @@ object StockResource {
                     )
                 } catch (e: Exception) {
                     logger.error("Failed while searching for: [$stockIdentifier]", e)
-                    logger.error("HTML {$result.get()}")
+                    logger.error("HTML [\n\n\n\n\n$result.get()\n\n\n\n\n]")
                     throw e
                 }
             }
