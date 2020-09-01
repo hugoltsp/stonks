@@ -19,4 +19,6 @@ object Settings {
     val notificationScheduleMinutes = dotenv["NOTIFICATION_SCHEDULE_MINUTES"]!!.toLong()
     val locale: Locale = Locale.Builder().setLanguage("pt").setRegion("br").build()
 
+    fun isProductionEnvironment() = dotenv["ENVIRONMENT_PROFILE"] == "production"
+
 }

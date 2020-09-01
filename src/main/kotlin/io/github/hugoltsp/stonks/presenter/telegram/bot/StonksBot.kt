@@ -15,7 +15,7 @@ import me.ivmg.telegram.dispatcher.command
 import me.ivmg.telegram.dispatcher.telegramError
 import me.ivmg.telegram.entities.ParseMode
 import me.ivmg.telegram.entities.Update
-import java.time.Duration
+import java.time.*
 
 class StonksBot(
     private val addStockToSubscriber: AddStockToSubscriber = AddStockToSubscriber(),
@@ -89,7 +89,7 @@ class StonksBot(
 
     private fun startNotificationRoutine() {
         GlobalScope.launch {
-            while (true) {
+            while (!Settings.isProductionEnvironment() || isValidDate()) {
                 try {
                     retrieveSubscriptions
                         .retrieveAll()
@@ -112,6 +112,18 @@ class StonksBot(
             }
         }
     }
+
+    private fun isValidDate(): Boolean {
+        val now = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"))
+        return !isWeekend(now) && isBetweenWorkingHours(now)
+    }
+
+    private fun isBetweenWorkingHours(now: ZonedDateTime) =
+        now.toLocalTime().isAfter(LocalTime.of(9, 0, 0))
+                && now.toLocalTime().isBefore(LocalTime.of(18, 0, 0))
+
+    private fun isWeekend(now: ZonedDateTime) = now.dayOfWeek == DayOfWeek.SATURDAY
+            && now.dayOfWeek == DayOfWeek.SUNDAY
 
     private fun Update.hasUser() = message != null && message!!.from != null
 
