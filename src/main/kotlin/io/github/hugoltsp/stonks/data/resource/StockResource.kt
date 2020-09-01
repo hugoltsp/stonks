@@ -2,11 +2,8 @@ package io.github.hugoltsp.stonks.data.resource
 
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
+import io.github.hugoltsp.stonks.data.domain.StockResponse
 import io.github.hugoltsp.stonks.infra.extensions.getLogger
-import org.jsoup.Jsoup
-import java.math.BigDecimal
-import java.math.RoundingMode
-import kotlin.math.log
 
 object StockResource {
 
@@ -30,53 +27,20 @@ object StockResource {
                 return null
             }
             else -> {
-                try {
-                    val document = Jsoup.parse(result.get())
-                    val elementsByTag = document.getElementsByTag("span")
-                    val filter = elementsByTag.findLast { "Preço das ações" == it.text() }
-                    val element = filter?.parent()?.parent()?.lastElementSibling()
-                    val text = element?.text()!!
-                    val rawText = text.dropLast(text.length - text.indexOf(stockIdentifier.toUpperCase()))
-                        .trim()
-                        .split(" ")
 
-                    return StockResponse(
-                        stockIdentifier.toUpperCase(),
-                        parseValue(rawText[0]),
-                        parseChange(rawText[1]),
-                        parsePercent(rawText[2])
-                    )
+                try {
+
+                    return StockResponseParser.parse(result.get(), stockIdentifier.toUpperCase())
+
                 } catch (e: Exception) {
-                    logger.error("Failed while searching for: [$stockIdentifier]", e)
-                    logger.error("HTML {$result.get()}")
+                    logger.error("Failed while searching for: [$stockIdentifier], Response [${result.get()}]", e)
                     throw e
                 }
+
             }
+
         }
 
     }
-
-    private fun parseChange(value: String) = if (value.contains("-")) {
-        parseValue(value.removePrefix("-")).negate()
-    } else {
-        parseValue(value.removePrefix("+"))
-    }
-
-    private fun parsePercent(value: String) =
-        parseValue(
-            value.removePrefix("(")
-                .removeSuffix(")")
-                .replace("%", "")
-        )
-
-    private fun parseValue(value: String) = BigDecimal(value.replace(",", "."))
-        .setScale(2, RoundingMode.HALF_UP)
-
-    data class StockResponse(
-        val name: String,
-        val price: BigDecimal,
-        val change: BigDecimal,
-        val changePercent: BigDecimal
-    )
 
 }
