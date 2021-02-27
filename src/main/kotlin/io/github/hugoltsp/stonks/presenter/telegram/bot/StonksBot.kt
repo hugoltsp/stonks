@@ -123,7 +123,7 @@ class StonksBot(
                 && now.toLocalTime().isBefore(LocalTime.of(18, 0, 0))
 
     private fun isWeekend(now: ZonedDateTime) = now.dayOfWeek == DayOfWeek.SATURDAY
-            && now.dayOfWeek == DayOfWeek.SUNDAY
+            || now.dayOfWeek == DayOfWeek.SUNDAY
 
     private fun Update.hasUser() = message != null && message!!.from != null
 
