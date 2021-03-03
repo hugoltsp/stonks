@@ -6,16 +6,18 @@ import io.github.hugoltsp.stonks.usecase.AddStockToSubscriber
 import io.github.hugoltsp.stonks.usecase.RemoveSubscription
 import io.github.hugoltsp.stonks.usecase.RetrieveStockByIdentifier
 import io.github.hugoltsp.stonks.usecase.RetrieveSubscriptions
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import me.ivmg.telegram.bot
 import me.ivmg.telegram.dispatch
 import me.ivmg.telegram.dispatcher.command
 import me.ivmg.telegram.dispatcher.telegramError
 import me.ivmg.telegram.entities.ParseMode
 import me.ivmg.telegram.entities.Update
-import java.time.*
+import java.time.DayOfWeek
+import java.time.LocalTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 class StonksBot(
     private val addStockToSubscriber: AddStockToSubscriber = AddStockToSubscriber(),
@@ -23,6 +25,8 @@ class StonksBot(
     private val retrieveSubscriptions: RetrieveSubscriptions = RetrieveSubscriptions(),
     private val removeSubscription: RemoveSubscription = RemoveSubscription()
 ) {
+
+    private val executor = Executors.newScheduledThreadPool(5)
 
     private val bot = bot {
         token = Settings.telegramToken
@@ -84,31 +88,33 @@ class StonksBot(
 
     fun run() {
         bot.startPolling()
-        startNotificationRoutine()
+        executor.scheduleAtFixedRate(
+            ::runNotifications,
+            0,
+            Settings.notificationScheduleMinutes,
+            TimeUnit.MINUTES
+        )
     }
 
-    private fun startNotificationRoutine() {
-        GlobalScope.launch {
-            while (!Settings.isProductionEnvironment() || isValidDate()) {
-                try {
-                    retrieveSubscriptions
-                        .retrieveAll()
-                        .groupBy { it.subscriberId }
-                        .forEach { (subscriberId, stocks) ->
-                            logger.info("Notifying user [{}]", subscriberId)
+    private fun runNotifications() {
+        if (!Settings.isProductionEnvironment() || isValidDate()) {
+            try {
+                retrieveSubscriptions
+                    .retrieveAll()
+                    .groupBy { it.subscriberId }
+                    .forEach { (subscriberId, stocks) ->
+                        logger.info("Notifying user [{}]", subscriberId)
 
-                            bot.sendMessage(subscriberId, stocks.asSequence()
-                                .map { it.stockName }
-                                .map { retrieveStockByIdentifier.retrieve(it) }
-                                .filterNotNull()
-                                .map { it.toString() }
-                                .joinToString("\n\n"), ParseMode.MARKDOWN)
+                        bot.sendMessage(subscriberId, stocks.asSequence()
+                            .map { it.stockName }
+                            .map { retrieveStockByIdentifier.retrieve(it) }
+                            .filterNotNull()
+                            .map { it.toString() }
+                            .joinToString("\n\n"), ParseMode.MARKDOWN)
 
-                        }
-                    delay(Duration.ofMinutes(Settings.notificationScheduleMinutes).toMillis())
-                } catch (e: Exception) {
-                    logger.error("Error.", e)
-                }
+                    }
+            } catch (e: Exception) {
+                logger.error("Error.", e)
             }
         }
     }
