@@ -27,7 +27,7 @@ class AddStockToSubscriber(
             }
             .forEach {
                 it?.let {
-                    logger.info("Adding stock [{}] to subscriber id [{}]", it.id, subscriber.id)
+                    logger.info("Adding stock [{}] to subscriber id [{}]", it.name, subscriber.id)
                     subscriberService.addStock(subscriber.id, it.id)
                 }
             }

@@ -110,7 +110,8 @@ class StonksBot(
                             .map { retrieveStockByIdentifier.retrieve(it) }
                             .filterNotNull()
                             .map { it.toString() }
-                            .joinToString("\n\n"), ParseMode.MARKDOWN)
+                            .sorted()
+                            .joinToString("\n"), ParseMode.MARKDOWN)
 
                     }
             } catch (e: Exception) {

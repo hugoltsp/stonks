@@ -18,7 +18,7 @@ data class StockOutput(
         val formattedChange = NumberFormat.getNumberInstance(Settings.locale).format(change)
         val formattedChangePercent = NumberFormat.getNumberInstance(Settings.locale).format(changePercent)
 
-        return "***${name.toUpperCase()}***: $formattedPrice $formattedChange (${formattedChangePercent}%)"
+        return "***${name.toUpperCase()}:***    `$formattedPrice    $formattedChange    (${formattedChangePercent}%)`"
     }
 
     companion object {
